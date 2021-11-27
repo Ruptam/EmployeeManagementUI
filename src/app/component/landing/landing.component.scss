@@ -1,0 +1,36 @@
+.officeBackgroud {
+   //border: 2px solid red;
+    height: 91vh;
+    width: 100vw;
+    background-image: url("./../../../assets/office.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    .officeTitle {
+        width: 50vw;
+        height: 90vh;
+        // border: 1px solid red;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        .officeSubTitle {
+            h1 {
+                
+                color: black;
+                font-size: xx-large;
+                font-weight: 900;
+                // border-bottom: 2px solid black;
+            }
+        }   
+    }
+
+    .officeTitleImage {
+        width: 50vw;
+        height: 90vh;
+        // border: 1px solid blue;
+
+        .officeSubTitle {
+            
+        }  
+    }
+}
