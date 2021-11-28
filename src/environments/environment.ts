@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  url: "http://13.127.115.224:8080/EmployeeManagement/"
+  url: "http://localhost:8081/"
 };
 
 /*

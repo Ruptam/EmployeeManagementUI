@@ -2,7 +2,10 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
+import { KeycloakService } from 'keycloak-angular';
+import { KeycloakProfile } from 'keycloak-js';
 import { Employee } from 'src/app/model/employee.model';
+import { User } from 'src/app/model/user.model';
 import { AppService } from 'src/app/service/app.service';
 import { AddEmployeeComponent } from '../dialog/add-employee/add-employee.component';
 import { DeleteComponent } from '../dialog/delete/delete.component';
@@ -17,14 +20,38 @@ export class HomeComponent implements OnInit, AfterViewInit {
   constructor(public dialog: MatDialog, 
     private service: AppService, 
     private changeDetector: ChangeDetectorRef,
-    private _liveAnnouncer: LiveAnnouncer) { }
+    private _liveAnnouncer: LiveAnnouncer, 
+    private keycloak: KeycloakService) { }
   
     ngAfterViewInit(): void {
       
     }
+  user: User = new User();
 
-  ngOnInit(): void {
+  public userProfile : KeycloakProfile | null = null;
+  public isLoggedIn : boolean = false;
+  isAdmin: boolean = false;
+
+  async ngOnInit() {
     this.getAllEmployee();
+
+    this.isLoggedIn = await this.keycloak.isLoggedIn();
+
+    if (this.isLoggedIn) {
+      this.userProfile = await this.keycloak.loadUserProfile();
+      this.user.roles = this.keycloak.getUserRoles(true);
+      this.user.firstName = this.userProfile.firstName;
+      this.user.lastName = this.userProfile.lastName;
+      this.user.id = this.userProfile.id;
+      this.user.email = this.userProfile.email;
+      this.user.username = this.userProfile.username;
+      sessionStorage.setItem('userdetails', JSON.stringify(this.user));
+    }
+    let jsonUser = sessionStorage.getItem('userdetails');
+    this.user = JSON.parse(jsonUser === null ? '' : jsonUser);
+    if (this.user.roles?.includes('ADMIN')) {
+      this.isAdmin = true;
+    }
   }
 
 
