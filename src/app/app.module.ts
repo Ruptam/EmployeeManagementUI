@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -17,6 +17,25 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { DeleteComponent } from './component/dialog/delete/delete.component';
+import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
+
+function initializeKeycloak(keycloak: KeycloakService) {
+  return () =>
+    keycloak.init({
+      config: {
+        url: 'http://localhost:8080/auth',
+        realm: 'myapp',
+        clientId: 'employee-management-angular',
+      },
+      initOptions: {
+        // onLoad: 'check-sso',
+        // silentCheckSsoRedirectUri:
+        //   window.location.origin + '/assets/silent-check-sso.html',
+        pkceMethod: 'S256',
+        redirectUri: 'http://localhost:4200/home'
+      },loadUserProfileAtStartUp: false
+    });
+}
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,6 +51,7 @@ import { DeleteComponent } from './component/dialog/delete/delete.component';
     MatToolbarModule,
     MatButtonModule,
     MatTableModule,
+    KeycloakAngularModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -39,7 +59,14 @@ import { DeleteComponent } from './component/dialog/delete/delete.component';
     HttpClientModule,
     MatIconModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService],
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
